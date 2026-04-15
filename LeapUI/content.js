@@ -11,6 +11,11 @@ class LeapUISelector {
         this.isEditing = false;
         this.selectedForMovement = null; // Elemento selecionado para movimento com setas
         this.moveMode = false; // Estado do modo movimento
+        this.resizeMode = false; // Estado do modo resize
+        this.resizeElement = null; // Elemento sendo redimensionado
+        this.resizeHandles = null; // Container dos handles de resize
+        this.isDragging = false; // Estado do drag de resize
+        this.dragHandle = null; // Handle sendo arrastado
         this.menuOpen = false;  // Controla se menu está aberto
         
         // Bind methods para manter contexto
@@ -136,6 +141,7 @@ class LeapUISelector {
             { id: 'copy-selector', text: 'Copiar Seletor', icon: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z"/></svg>' },
             { id: 'edit-text', text: 'Editar Texto', icon: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" viewBox="0 0 16 16"><path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/><path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/></svg>' },
             { id: 'duplicate-element', text: 'Duplicar Elemento', icon: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z"/></svg>' },
+            { id: 'resize-element', text: 'Redimensionar Elemento', icon: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" viewBox="0 0 16 16"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M5.354 8.354a.5.5 0 1 0-.708-.708l-2 2a.5.5 0 0 0 0 .708l2 2a.5.5 0 0 0 .708-.708L4.207 10.5H9.5a.5.5 0 0 0 0-1H4.207l1.147-1.146zm5.292-.354a.5.5 0 0 0 .708.708l2-2a.5.5 0 0 0 0-.708l-2-2a.5.5 0 0 0-.708.708L11.793 5.5H6.5a.5.5 0 0 0 0 1h5.293L10.646 7.646z"/></svg>' },
             { id: 'delete-element', text: 'Excluir Elemento', icon: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-trash3" viewBox="0 0 16 16"><path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5"/></svg>' },
         ];
         
@@ -283,8 +289,17 @@ class LeapUISelector {
         );
         moveToggleBtn.id = 'move-toggle-btn';
         
+        // Botão de redimensionar
+        const resizeToggleBtn = this.createNavButton(
+            '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" viewBox="0 0 16 16"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M5.354 8.354a.5.5 0 1 0-.708-.708l-2 2a.5.5 0 0 0 0 .708l2 2a.5.5 0 0 0 .708-.708L4.207 10.5H9.5a.5.5 0 0 0 0-1H4.207l1.147-1.146zm5.292-.354a.5.5 0 0 0 .708.708l2-2a.5.5 0 0 0 0-.708l-2-2a.5.5 0 0 0-.708.708L11.793 5.5H6.5a.5.5 0 0 0 0 1h5.293L10.646 7.646z"/></svg>',
+            this.resizeMode ? 'Desativar Modo Resize (ESC)' : 'Ativar Modo Resize',
+            () => this.toggleResizeMode(), theme
+        );
+        resizeToggleBtn.id = 'resize-toggle-btn';
+        
         leftButtons.appendChild(duplicateBtn);
         leftButtons.appendChild(deleteBtn);
+        leftButtons.appendChild(resizeToggleBtn);
         leftButtons.appendChild(moveToggleBtn);
         
         // Container de botões à direita
@@ -485,7 +500,10 @@ class LeapUISelector {
             event.preventDefault();
             event.stopPropagation();
             
-            if (this.moveMode) {
+            if (this.resizeMode) {
+                // Se modo resize está ativo, desativar primeiro
+                this.toggleResizeMode();
+            } else if (this.moveMode) {
                 // Se modo movimento está ativo, desativar primeiro
                 this.toggleMoveMode();
             } else if (this.selectedForMovement) {
@@ -642,6 +660,12 @@ class LeapUISelector {
             });
         }
         
+        // Desativar modo resize se estiver ativo
+        if (this.resizeMode) {
+            this.resizeMode = false;
+            this.hideResizeHandles();
+        }
+        
         // Limpar elemento atual
         this.clearCurrentElement();
         
@@ -695,6 +719,11 @@ class LeapUISelector {
     handleMouseMove(event) {
         if (!this.isActive) return;
         
+        // PAUSAR highlight se modo resize estiver ativo
+        if (this.resizeMode) {
+            return;  // Não detectar outros elementos durante resize
+        }
+        
         // PAUSAR highlight se menu estiver aberto
         if (this.menuOpen) {
             return;  // Não fazer nada se menu estiver aberto
@@ -731,6 +760,11 @@ class LeapUISelector {
     
     handleClick(event) {
         if (!this.isActive) return;
+        
+        // PAUSAR cliques se modo resize estiver ativo
+        if (this.resizeMode) {
+            return;  // Não mostrar menu de contexto durante resize
+        }
         
         const element = event.target;
         
@@ -1080,6 +1114,9 @@ class LeapUISelector {
             case 'delete-element':
                 this.deleteElement(element);
                 break;
+            case 'resize-element':
+                this.toggleResizeMode(element);
+                break;
             case 'inspect-element':
                 this.inspectElement(element);
                 break;
@@ -1368,6 +1405,238 @@ class LeapUISelector {
         }
     }
     
+    toggleResizeMode(element = null) {
+        this.resizeMode = !this.resizeMode;
+        
+        if (this.resizeMode) {
+            // Ativar modo resize
+            if (element || this.currentElement) {
+                this.resizeElement = element || this.currentElement;
+                this.showResizeHandles(this.resizeElement);
+                
+                // Esconder overlay durante modo resize
+                if (this.overlay) {
+                    this.overlay.style.display = 'none';
+                }
+                
+                this.showNotification('Modo Resize ATIVO! Arraste os handles para redimensionar', 'success');
+            } else {
+                this.showNotification('⚠️ Selecione um elemento primeiro para ativar o modo resize', 'warning');
+                this.resizeMode = false;
+                return;
+            }
+        } else {
+            // Desativar modo resize
+            this.hideResizeHandles();
+            this.resizeElement = null;
+            
+            // Mostrar overlay novamente
+            if (this.overlay) {
+                this.overlay.style.display = 'block';
+            }
+            
+            this.showNotification('Modo Resize DESATIVADO', 'info');
+        }
+        
+        // Atualizar navbar
+        this.updateResizeButton();
+    }
+    
+    showResizeHandles(element) {
+        // Remover handles existentes
+        this.hideResizeHandles();
+        
+        // Criar container dos handles
+        this.resizeHandles = document.createElement('div');
+        this.resizeHandles.id = 'leap-ui-resize-handles';
+        this.resizeHandles.style.cssText = `
+            position: absolute !important;
+            pointer-events: none !important;
+            z-index: 999999 !important;
+        `;
+        
+        // Posicionar os handles
+        this.updateHandlePositions(element);
+        
+        // Criar 8 handles (cantos + bordas)
+        const handlePositions = [
+            { name: 'nw', cursor: 'nw-resize', position: 'top: -5px; left: -5px;' },
+            { name: 'n', cursor: 'n-resize', position: 'top: -5px; left: 50%; transform: translateX(-50%);' },
+            { name: 'ne', cursor: 'ne-resize', position: 'top: -5px; right: -5px;' },
+            { name: 'e', cursor: 'e-resize', position: 'top: 50%; right: -5px; transform: translateY(-50%);' },
+            { name: 'se', cursor: 'se-resize', position: 'bottom: -5px; right: -5px;' },
+            { name: 's', cursor: 's-resize', position: 'bottom: -5px; left: 50%; transform: translateX(-50%);' },
+            { name: 'sw', cursor: 'sw-resize', position: 'bottom: -5px; left: -5px;' },
+            { name: 'w', cursor: 'w-resize', position: 'top: 50%; left: -5px; transform: translateY(-50%);' }
+        ];
+        
+        handlePositions.forEach(handle => {
+            const handleElement = document.createElement('div');
+            handleElement.className = `leap-ui-resize-handle leap-ui-resize-${handle.name}`;
+            handleElement.style.cssText = `
+                position: absolute !important;
+                width: 10px !important;
+                height: 10px !important;
+                background: #68B13E !important;
+                border: 2px solid #ffffff !important;
+                border-radius: 50% !important;
+                cursor: ${handle.cursor} !important;
+                pointer-events: all !important;
+                z-index: 1000000 !important;
+                ${handle.position}
+            `;
+            
+            // Adicionar eventos de drag
+            handleElement.addEventListener('mousedown', (e) => this.startDrag(e, handle.name, element));
+            
+            this.resizeHandles.appendChild(handleElement);
+        });
+        
+        document.body.appendChild(this.resizeHandles);
+        
+        // Atualizar posições quando página rolar
+        this.scrollListener = () => this.updateHandlePositions(element);
+        window.addEventListener('scroll', this.scrollListener, true);
+        window.addEventListener('resize', this.scrollListener);
+    }
+    
+    hideResizeHandles() {
+        if (this.resizeHandles) {
+            this.resizeHandles.remove();
+            this.resizeHandles = null;
+        }
+        
+        if (this.scrollListener) {
+            window.removeEventListener('scroll', this.scrollListener, true);
+            window.removeEventListener('resize', this.scrollListener);
+            this.scrollListener = null;
+        }
+    }
+    
+    updateHandlePositions(element) {
+        if (!this.resizeHandles || !element) return;
+        
+        const rect = element.getBoundingClientRect();
+        this.resizeHandles.style.top = rect.top + window.scrollY + 'px';
+        this.resizeHandles.style.left = rect.left + window.scrollX + 'px';
+        this.resizeHandles.style.width = rect.width + 'px';
+        this.resizeHandles.style.height = rect.height + 'px';
+    }
+    
+    startDrag(e, handleType, element) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        this.isDragging = true;
+        this.dragHandle = handleType;
+        
+        const rect = element.getBoundingClientRect();
+        const startX = e.clientX;
+        const startY = e.clientY;
+        const startWidth = rect.width;
+        const startHeight = rect.height;
+        const startLeft = rect.left;
+        const startTop = rect.top;
+        
+        const handleMouseMove = (e) => {
+            if (!this.isDragging) return;
+            
+            const deltaX = e.clientX - startX;
+            const deltaY = e.clientY - startY;
+            
+            let newWidth = startWidth;
+            let newHeight = startHeight;
+            let newLeft = startLeft;
+            let newTop = startTop;
+            
+            // Calcular novas dimensões baseado no handle
+            switch (handleType) {
+                case 'nw':
+                    newWidth = startWidth - deltaX;
+                    newHeight = startHeight - deltaY;
+                    newLeft = startLeft + deltaX;
+                    newTop = startTop + deltaY;
+                    break;
+                case 'n':
+                    newHeight = startHeight - deltaY;
+                    newTop = startTop + deltaY;
+                    break;
+                case 'ne':
+                    newWidth = startWidth + deltaX;
+                    newHeight = startHeight - deltaY;
+                    newTop = startTop + deltaY;
+                    break;
+                case 'e':
+                    newWidth = startWidth + deltaX;
+                    break;
+                case 'se':
+                    newWidth = startWidth + deltaX;
+                    newHeight = startHeight + deltaY;
+                    break;
+                case 's':
+                    newHeight = startHeight + deltaY;
+                    break;
+                case 'sw':
+                    newWidth = startWidth - deltaX;
+                    newHeight = startHeight + deltaY;
+                    newLeft = startLeft + deltaX;
+                    break;
+                case 'w':
+                    newWidth = startWidth - deltaX;
+                    newLeft = startLeft + deltaX;
+                    break;
+            }
+            
+            // Aplicar tamanho mínimo
+            newWidth = Math.max(20, newWidth);
+            newHeight = Math.max(20, newHeight);
+            
+            // Aplicar mudanças
+            element.style.width = newWidth + 'px';
+            element.style.height = newHeight + 'px';
+            
+            // Atualizar posição se necessário
+            if (handleType.includes('w')) {
+                element.style.left = (newLeft - rect.left + parseInt(element.style.left || 0)) + 'px';
+            }
+            if (handleType.includes('n')) {
+                element.style.top = (newTop - rect.top + parseInt(element.style.top || 0)) + 'px';
+            }
+            
+            // Atualizar posições dos handles
+            this.updateHandlePositions(element);
+        };
+        
+        const handleMouseUp = () => {
+            this.isDragging = false;
+            this.dragHandle = null;
+            document.removeEventListener('mousemove', handleMouseMove);
+            document.removeEventListener('mouseup', handleMouseUp);
+        };
+        
+        document.addEventListener('mousemove', handleMouseMove);
+        document.addEventListener('mouseup', handleMouseUp);
+    }
+    
+    updateResizeButton() {
+        const resizeToggleBtn = document.getElementById('resize-toggle-btn');
+        if (resizeToggleBtn) {
+            resizeToggleBtn.innerHTML = this.resizeMode ? '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" viewBox="0 0 16 16"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M5.354 8.354a.5.5 0 1 0-.708-.708l-2 2a.5.5 0 0 0 0 .708l2 2a.5.5 0 0 0 .708-.708L4.207 10.5H9.5a.5.5 0 0 0 0-1H4.207l1.147-1.146zm5.292-.354a.5.5 0 0 0 .708.708l2-2a.5.5 0 0 0 0-.708l-2-2a.5.5 0 0 0-.708.708L11.793 5.5H6.5a.5.5 0 0 0 0 1h5.293L10.646 7.646z"/></svg>' : '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" viewBox="0 0 16 16"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M5.354 8.354a.5.5 0 1 0-.708-.708l-2 2a.5.5 0 0 0 0 .708l2 2a.5.5 0 0 0 .708-.708L4.207 10.5H9.5a.5.5 0 0 0 0-1H4.207l1.147-1.146zm5.292-.354a.5.5 0 0 0 .708.708l2-2a.5.5 0 0 0 0-.708l-2-2a.5.5 0 0 0-.708.708L11.793 5.5H6.5a.5.5 0 0 0 0 1h5.293L10.646 7.646z"/></svg>';
+            resizeToggleBtn.title = this.resizeMode ? 'Desativar Modo Resize (ESC)' : 'Ativar Modo Resize';
+            
+            // Atualizar estilo do botão
+            if (this.resizeMode) {
+                resizeToggleBtn.style.background = 'rgba(104, 177, 62, 0.8)';
+                resizeToggleBtn.style.color = '#ffffff';
+                resizeToggleBtn.style.borderColor = '#68B13E';
+            } else {
+                resizeToggleBtn.style.background = 'rgba(104, 177, 62, 0.3)';
+                resizeToggleBtn.style.color = '#ffffff';
+                resizeToggleBtn.style.borderColor = 'rgba(74, 85, 104, 0.5)';
+            }
+        }
+    }
+    
     createGlowStyles() {
         // Criar estilos para efeito glow e animações da navbar
         if (!document.querySelector('#leap-ui-glow-styles')) {
@@ -1445,6 +1714,16 @@ class LeapUISelector {
                 
                 .leap-ui-indicator-hide {
                     animation: indicatorSlideOut 0.15s ease-in forwards !important;
+                }
+                
+                /* Estilos para handles de resize */
+                .leap-ui-resize-handle {
+                    transition: all 0.1s ease !important;
+                }
+                
+                .leap-ui-resize-handle:hover {
+                    background: #5a9e35 !important;
+                    transform: scale(1.2) !important;
                 }
             `;
             document.head.appendChild(style);
