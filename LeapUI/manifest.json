@@ -1,0 +1,32 @@
+{
+  "manifest_version": 3,
+  "name": "LeapUI",
+  "version": "4.0.0",
+  "description": "Uma extensão avançada de seleção e manipulação de elementos UI. Pressione Alt+I para ativar.",
+  "permissions": [
+    "activeTab"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "css": ["styles.css"]
+    }
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "LeapUI"
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self';"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["icons/logo.png"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}
