@@ -17,6 +17,7 @@ class LeapUISelector {
         this.isDragging = false; // Estado do drag de resize
         this.dragHandle = null; // Handle sendo arrastado
         this.menuOpen = false;  // Controla se menu está aberto
+        this.colorPickerActive = false; // Controla se color picker está ativo
         
         // Sistema de histórico para Ctrl+Z
         this.actionHistory = []; // Histórico de ações para desfazer
@@ -193,6 +194,11 @@ class LeapUISelector {
         });
         
         document.addEventListener('click', (event) => {
+            // PAUSAR se color picker estiver ativo
+            if (this.colorPickerActive) {
+                return;
+            }
+            
             // Só esconder se não for clique no próprio menu
             if (!event.target.closest('#leap-ui-context-menu')) {
                 this.hideContextMenu();
@@ -301,8 +307,23 @@ class LeapUISelector {
         );
         resizeToggleBtn.id = 'resize-toggle-btn';
         
+        // Botões de cores
+        const textColorBtn = this.createNavButton(
+            '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" viewBox="0 0 16 16"><path d="M5.5 7a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1zM5 9.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5M9 2a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1zm1.5 8.5a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5z"/><path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2M9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5z"/></svg>',
+            'Mudar Cor do Texto',
+            () => this.openTextColorPicker(), theme
+        );
+        
+        const backgroundColorBtn = this.createNavButton(
+            '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" viewBox="0 0 16 16"><path d="M8.5 6a.5.5 0 0 0-1 0v1.5H6a.5.5 0 0 0 0 1h1.5V10a.5.5 0 0 0 1 0V8.5H10a.5.5 0 0 0 0-1H8.5z"/><path d="M3 0h10a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3H3a3 3 0 0 1-3-3V3a3 3 0 0 1 3-3M1 3a2 2 0 0 0 2-2h10a2 2 0 0 0 2 2v10a2 2 0 0 0-2 2H3a2 2 0 0 0-2-2z"/></svg>',
+            'Mudar Cor de Fundo',
+            () => this.openBackgroundColorPicker(), theme
+        );
+        
         leftButtons.appendChild(duplicateBtn);
         leftButtons.appendChild(deleteBtn);
+        leftButtons.appendChild(textColorBtn);
+        leftButtons.appendChild(backgroundColorBtn);
         leftButtons.appendChild(resizeToggleBtn);
         leftButtons.appendChild(moveToggleBtn);
         
@@ -511,7 +532,14 @@ class LeapUISelector {
             event.preventDefault();
             event.stopPropagation();
             
-            if (this.resizeMode) {
+            if (this.colorPickerActive) {
+                // Se color picker está ativo, fechar primeiro
+                const colorPicker = document.getElementById('leap-color-picker');
+                if (colorPicker) {
+                    this.colorPickerActive = false;
+                    colorPicker.remove();
+                }
+            } else if (this.resizeMode) {
                 // Se modo resize está ativo, desativar primeiro
                 this.toggleResizeMode();
             } else if (this.moveMode) {
@@ -870,7 +898,320 @@ class LeapUISelector {
             Object.keys(originalStyles).forEach(property => {
                 element.style[property] = originalStyles[property];
             });
+            
+            // Adicionar efeito visual de undo
+            element.style.transition = 'all 0.2s ease';
+            element.style.transform = 'scale(1.05)';
+            
+            setTimeout(() => {
+                if (element.style) {
+                    element.style.transform = '';
+                    element.style.transition = '';
+                }
+            }, 200);
         }
+    }
+    
+    // ===============================
+    // SISTEMA DE CORES
+    // ===============================
+    
+    openTextColorPicker() {
+        if (!this.currentElement) {
+            this.showNotification('Selecione um elemento primeiro!', 'warning');
+            return;
+        }
+        
+        this.createColorPicker('text', 'Cor do Texto');
+    }
+    
+    openBackgroundColorPicker() {
+        if (!this.currentElement) {
+            this.showNotification('Selecione um elemento primeiro!', 'warning');
+            return;
+        }
+        
+        this.createColorPicker('background', 'Cor de Fundo');
+    }
+    
+    createColorPicker(type, title) {
+        // Ativar flag de picker ativo - TRAVA SELEÇÃO
+        this.colorPickerActive = true;
+        
+        // Remover picker existente se houver
+        const existingPicker = document.getElementById('leap-color-picker');
+        if (existingPicker) {
+            existingPicker.remove();
+        }
+        
+        // Criar overlay do picker
+        const overlay = document.createElement('div');
+        overlay.id = 'leap-color-picker';
+        overlay.style.cssText = `
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            background: rgba(0, 0, 0, 0.5) !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            z-index: 9999999 !important;
+            backdrop-filter: blur(2px) !important;
+        `;
+        
+        // Criar container do picker
+        const pickerContainer = document.createElement('div');
+        pickerContainer.style.cssText = `
+            background: white !important;
+            border-radius: 8px !important;
+            padding: 20px !important;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
+            max-width: 300px !important;
+            width: 90% !important;
+        `;
+        
+        // Título com cor atual para debug
+        const titleEl = document.createElement('h3');
+        const currentColor = this.getCurrentColor(type);
+        titleEl.textContent = `${title} (${currentColor})`;
+        titleEl.style.cssText = `
+            margin: 0 0 15px 0 !important;
+            font-size: 16px !important;
+            color: #333 !important;
+            text-align: center !important;
+        `;
+        
+        // Input de cor com fallback
+        const colorInput = document.createElement('input');
+        colorInput.type = 'color';
+        colorInput.id = 'leap-color-input';
+        colorInput.style.cssText = `
+            width: 100% !important;
+            height: 60px !important;
+            border: 2px solid #ddd !important;
+            border-radius: 4px !important;
+            cursor: pointer !important;
+            margin-bottom: 10px !important;
+            outline: none !important;
+            -webkit-appearance: none !important;
+            background: none !important;
+            padding: 0 !important;
+            box-sizing: border-box !important;
+            pointer-events: auto !important;
+        `;
+        
+        // Input text como fallback para cores hex
+        const hexInput = document.createElement('input');
+        hexInput.type = 'text';
+        hexInput.placeholder = 'Ex: #FF0000';
+        hexInput.style.cssText = `
+            width: 100% !important;
+            height: 40px !important;
+            border: 1px solid #ddd !important;
+            border-radius: 4px !important;
+            margin-bottom: 15px !important;
+            padding: 0 10px !important;
+            font-family: monospace !important;
+            font-size: 14px !important;
+            text-align: center !important;
+            text-transform: uppercase !important;
+        `;
+        
+        // Definir cor atual com validação
+        // Validar se a cor é válida para o input
+        if (/^#[0-9A-Fa-f]{6}$/.test(currentColor)) {
+            colorInput.value = currentColor;
+            hexInput.value = currentColor;
+        } else {
+            // Fallback se cor inválida
+            const fallbackColor = type === 'text' ? '#000000' : '#ffffff';
+            colorInput.value = fallbackColor;
+            hexInput.value = fallbackColor;
+        }
+        
+        // Sincronizar os inputs
+        colorInput.addEventListener('change', (e) => {
+            hexInput.value = e.target.value;
+            e.stopPropagation();
+        });
+        
+        hexInput.addEventListener('input', (e) => {
+            const value = e.target.value;
+            if (/^#[0-9A-Fa-f]{6}$/.test(value)) {
+                colorInput.value = value;
+            }
+            e.stopPropagation();
+        });
+        
+        // Container de botões
+        const buttonsContainer = document.createElement('div');
+        buttonsContainer.style.cssText = `
+            display: flex !important;
+            gap: 10px !important;
+            justify-content: space-between !important;
+        `;
+        
+        // Botão cancelar
+        const cancelBtn = document.createElement('button');
+        cancelBtn.textContent = 'Cancelar';
+        cancelBtn.style.cssText = `
+            flex: 1 !important;
+            padding: 8px 16px !important;
+            border: 2px solid #ddd !important;
+            background: white !important;
+            color: #666 !important;
+            border-radius: 4px !important;
+            cursor: pointer !important;
+            font-size: 14px !important;
+        `;
+        
+        // Botão aplicar
+        const applyBtn = document.createElement('button');
+        applyBtn.textContent = 'Aplicar';
+        applyBtn.style.cssText = `
+            flex: 1 !important;
+            padding: 8px 16px !important;
+            border: 2px solid #4CAF50 !important;
+            background: #4CAF50 !important;
+            color: white !important;
+            border-radius: 4px !important;
+            cursor: pointer !important;
+            font-size: 14px !important;
+        `;
+        
+        // Events com proteção seletiva
+        cancelBtn.onclick = (e) => {
+            e.stopPropagation();
+            this.colorPickerActive = false; // Desativar flag
+            overlay.remove();
+        };
+        applyBtn.onclick = (e) => {
+            e.stopPropagation();
+            // Usar cor do hexInput se válida, senão do colorInput
+            const selectedColor = /^#[0-9A-Fa-f]{6}$/.test(hexInput.value) ? hexInput.value : colorInput.value;
+            this.applyColor(type, selectedColor);
+            this.colorPickerActive = false; // Desativar flag
+            overlay.remove();
+        };
+        
+        // Proteção do container (sem preventDefault para permitir interação)
+        pickerContainer.onclick = (e) => {
+            e.stopPropagation(); // Evita propagação mas permite interação
+        };
+        
+        pickerContainer.onmousemove = (e) => {
+            e.stopPropagation();
+        };
+        
+        // Fechar ao clicar no overlay (fora do container)
+        overlay.onclick = (e) => {
+            if (e.target === overlay) {
+                e.stopPropagation();
+                this.colorPickerActive = false; // Desativar flag
+                overlay.remove();
+            }
+        };
+        
+        // Montar estrutura
+        buttonsContainer.appendChild(cancelBtn);
+        buttonsContainer.appendChild(applyBtn);
+        
+        pickerContainer.appendChild(titleEl);
+        pickerContainer.appendChild(colorInput);
+        pickerContainer.appendChild(hexInput);
+        pickerContainer.appendChild(buttonsContainer);
+        
+        overlay.appendChild(pickerContainer);
+        document.body.appendChild(overlay);
+        
+        // Focar no input de cor primeiro  
+        setTimeout(() => {
+            colorInput.focus();
+        }, 100);
+    }
+    
+    getCurrentColor(type) {
+        if (!this.currentElement) {
+            return type === 'text' ? '#000000' : '#ffffff';
+        }
+        
+        const computedStyle = window.getComputedStyle(this.currentElement);
+        
+        if (type === 'text') {
+            const color = computedStyle.color;
+            const hexColor = this.rgbToHex(color);
+            // Fallback para garantir cor válida
+            return hexColor || '#000000';
+        } else {
+            const bgcolor = computedStyle.backgroundColor;
+            const hexColor = this.rgbToHex(bgcolor);
+            // Fallback para garantir cor válida
+            return hexColor || '#ffffff';
+        }
+    }
+    
+    rgbToHex(rgb) {
+        // Converter rgb(r, g, b) para hex
+        if (!rgb || rgb === 'transparent' || rgb === 'rgba(0, 0, 0, 0)' || rgb === 'inherit') {
+            return null;
+        }
+        
+        // Tentar extrair números RGB
+        const result = rgb.match(/\d+/g);
+        if (!result || result.length < 3) {
+            return null;
+        }
+        
+        const r = Math.min(255, Math.max(0, parseInt(result[0])));
+        const g = Math.min(255, Math.max(0, parseInt(result[1])));
+        const b = Math.min(255, Math.max(0, parseInt(result[2])));
+        
+        // Converter para hex com padding de zeros
+        const hex = "#" + [
+            r.toString(16).padStart(2, '0'),
+            g.toString(16).padStart(2, '0'), 
+            b.toString(16).padStart(2, '0')
+        ].join('');
+        
+        return hex;
+    }
+    
+    applyColor(type, color) {
+        if (!this.currentElement) return;
+        
+        const element = this.currentElement;
+        
+        // Salvar estado original para undo
+        const originalStyles = {};
+        
+        if (type === 'text') {
+            originalStyles.color = element.style.color || '';
+            element.style.color = color;
+            this.showNotification(`Cor do texto alterada para ${color}`, 'success');
+        } else {
+            originalStyles.backgroundColor = element.style.backgroundColor || '';
+            element.style.backgroundColor = color;
+            this.showNotification(`Cor de fundo alterada para ${color}`, 'success');
+        }
+        
+        // Salvar ação no histórico
+        this.saveAction('style', element, {
+            originalStyles: originalStyles,
+            newStyles: type === 'text' ? { color: color } : { backgroundColor: color }
+        });
+        
+        // Efeito visual de aplicação
+        element.style.transition = 'all 0.3s ease';
+        element.style.transform = 'scale(1.02)';
+        
+        setTimeout(() => {
+            if (element.style) {
+                element.style.transform = '';
+                element.style.transition = '';
+            }
+        }, 300);
     }
     
     toggle() {
@@ -915,6 +1256,9 @@ class LeapUISelector {
         if (!this.isActive) return; 
         this.isActive = false;
         
+        // Resetar flags
+        this.colorPickerActive = false;
+        
         // Restaurar cursor
         if (this.originalCursor !== null) {
             document.body.style.cursor = this.originalCursor;
@@ -942,6 +1286,12 @@ class LeapUISelector {
         
         // Limpar elemento atual
         this.clearCurrentElement();
+        
+        // Fechar color picker se estiver aberto
+        const colorPicker = document.getElementById('leap-color-picker');
+        if (colorPicker) {
+            colorPicker.remove();
+        }
         
         // IMPORTANTE: Limpar TODOS os elementos com highlight
         this.clearAllHighlights();
@@ -993,6 +1343,11 @@ class LeapUISelector {
     handleMouseMove(event) {
         if (!this.isActive) return;
         
+        // PAUSAR highlight se color picker estiver ativo
+        if (this.colorPickerActive) {
+            return; // Não processar hover quando color picker estiver aberto
+        }
+        
         // PAUSAR highlight se modo resize estiver ativo
         if (this.resizeMode) {
             return;  // Não detectar outros elementos durante resize
@@ -1009,7 +1364,7 @@ class LeapUISelector {
         const element = event.target;
         
         // Ignorar overlay, navbar, indicador e elementos relacionados
-        if (element === this.overlay || element.closest('#leap-ui-overlay, #leap-ui-navbar, #leap-ui-element-indicator, .leap-ui-notification, #leap-ui-context-menu')) {
+        if (element === this.overlay || element.closest('#leap-ui-overlay, #leap-ui-navbar, #leap-ui-element-indicator, .leap-ui-notification, #leap-ui-context-menu, #leap-color-picker')) {
             return;
         }
         
@@ -1026,6 +1381,11 @@ class LeapUISelector {
     handleMouseOut(event) {
         if (!this.isActive) return;
         
+        // PAUSAR se color picker estiver ativo
+        if (this.colorPickerActive) {
+            return;
+        }
+        
         // Só limpar se não estivermos indo para um elemento filho
         if (!event.relatedTarget || !event.target.contains(event.relatedTarget)) {
             // Não limpar ainda, apenas quando sair completamente
@@ -1034,6 +1394,11 @@ class LeapUISelector {
     
     handleClick(event) {
         if (!this.isActive) return;
+        
+        // PAUSAR cliques se color picker estiver ativo
+        if (this.colorPickerActive) {
+            return; // Não processar seleção quando color picker estiver aberto
+        }
         
         // PAUSAR cliques se modo resize estiver ativo
         if (this.resizeMode) {
@@ -1044,7 +1409,7 @@ class LeapUISelector {
         
         // Ignorar cliques no overlay, navbar, indicador, menu de contexto e notificações
         if (element === this.overlay || 
-            element.closest('#leap-ui-overlay, #leap-ui-navbar, #leap-ui-element-indicator, .leap-ui-notification, #leap-ui-context-menu')) {
+            element.closest('#leap-ui-overlay, #leap-ui-navbar, #leap-ui-element-indicator, .leap-ui-notification, #leap-ui-context-menu, #leap-color-picker')) {
             return;
         }
         
@@ -1057,6 +1422,12 @@ class LeapUISelector {
     
     handleContextMenu(event) {
         if (!this.isActive) return;
+        
+        // PAUSAR context menu se color picker estiver ativo
+        if (this.colorPickerActive) {
+            return;
+        }
+        
         event.preventDefault();
     }
     
