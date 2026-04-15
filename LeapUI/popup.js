@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
         } catch (error) {
-            console.error('Erro ao inicializar popup:', error);
+            // Erro ao inicializar popup
             updateUI(false);
         }
     }
@@ -79,7 +79,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }, 500);
             }
         } catch (error) {
-            console.error('Erro ao enviar mensagem:', error);
+            // Erro ao enviar mensagem
             
             // Se falhou, talvez precise injetar o content script primeiro
             try {
@@ -96,17 +96,17 @@ document.addEventListener('DOMContentLoaded', function() {
                         updateUI(!isActive);
                         window.close();
                     } catch (retryError) {
-                        console.error('Erro no retry:', retryError);
+                        // Erro no retry
                     }
                 }, 100);
             } catch (injectError) {
-                console.error('Erro ao injetar script:', injectError);
+                // Erro ao injetar script
             }
         }
     });
     
     // Adicionar informações de debug no console
-    console.log('LeapUI Popup carregado');
+    // LeapUI Popup carregado
     
     // Escutar mudanças de status da extensão
     chrome.runtime.onMessage?.addListener((message, sender, sendResponse) => {

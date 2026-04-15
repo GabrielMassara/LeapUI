@@ -18,6 +18,10 @@ class LeapUISelector {
         this.dragHandle = null; // Handle sendo arrastado
         this.menuOpen = false;  // Controla se menu está aberto
         
+        // Sistema de histórico para Ctrl+Z
+        this.actionHistory = []; // Histórico de ações para desfazer
+        this.maxHistorySize = 20; // Máximo de ações no histórico
+        
         // Bind methods para manter contexto
         this.handleMouseMove = this.handleMouseMove.bind(this);
         this.handleMouseOut = this.handleMouseOut.bind(this);
@@ -374,7 +378,7 @@ class LeapUISelector {
             try {
                 onClick();
             } catch (error) {
-                console.error('Erro ao executar ação do botão:', error);
+                // Erro silencioso
             }
         });
         
@@ -495,6 +499,13 @@ class LeapUISelector {
             this.toggle();
         }
         
+        // Ctrl + Z para desfazer última ação
+        if (event.ctrlKey && event.key.toLowerCase() === 'z' && !event.shiftKey) {
+            event.preventDefault();
+            event.stopPropagation();
+            this.undoLastAction();
+        }
+        
         // ESC para desativar
         if (event.key === 'Escape') {
             event.preventDefault();
@@ -596,6 +607,269 @@ class LeapUISelector {
         if (event.altKey && event.key.toLowerCase() === 'i') {
             event.preventDefault();
             event.stopPropagation();
+        }
+    }
+    
+    // ===============================
+    // SISTEMA DE HISTÓRICO CTRL+Z
+    // ===============================
+    
+    saveAction(type, element, data = {}) {
+        // Salva uma ação no histórico para permitir Ctrl+Z
+        const action = {
+            type: type, // 'delete', 'duplicate', 'resize', 'move', 'style'
+            timestamp: Date.now(),
+            element: element,
+            data: data
+        };
+        
+        // Salvar estado específico baseado no tipo de ação
+        switch (type) {
+            case 'delete':
+                // Clonar elemento antes de qualquer modificação
+                const elementClone = element.cloneNode(true);
+                // Limpar estilos de transição que podem interferir
+                elementClone.style.transition = '';
+                elementClone.style.opacity = '';
+                elementClone.style.transform = '';
+                elementClone.style.background = '';
+                
+                action.data = {
+                    parentNode: element.parentNode,
+                    nextSibling: element.nextSibling,
+                    elementHTML: element.outerHTML,
+                    elementClone: elementClone
+                };
+                break;
+                
+            case 'duplicate':
+                action.data = {
+                    duplicatedElement: data.duplicatedElement
+                };
+                break;
+                
+            case 'resize':
+                action.data = {
+                    originalWidth: element.style.width,
+                    originalHeight: element.style.height,
+                    originalLeft: element.style.left,
+                    originalTop: element.style.top,
+                    newWidth: data.newWidth,
+                    newHeight: data.newHeight,
+                    newLeft: data.newLeft,
+                    newTop: data.newTop
+                };
+                break;
+                
+            case 'move':
+                action.data = {
+                    originalLeft: data.originalLeft,
+                    originalTop: data.originalTop,
+                    newLeft: data.newLeft,
+                    newTop: data.newTop
+                };
+                break;
+                
+            case 'style':
+                action.data = {
+                    originalStyles: data.originalStyles,
+                    newStyles: data.newStyles
+                };
+                break;
+        }
+        
+        // Adicionar ao histórico
+        this.actionHistory.push(action);
+        
+        // Manter tamanho máximo do histórico
+        if (this.actionHistory.length > this.maxHistorySize) {
+            this.actionHistory.shift(); // Remove o primeiro (mais antigo)
+        }
+    }
+    
+    undoLastAction() {
+        if (this.actionHistory.length === 0) {
+            this.showNotification('Nenhuma ação para desfazer', 'info');
+            return;
+        }
+        
+        const lastAction = this.actionHistory.pop();
+        
+        try {
+            switch (lastAction.type) {
+                case 'delete':
+                    this.undoDelete(lastAction);
+                    break;
+                    
+                case 'duplicate':
+                    this.undoDuplicate(lastAction);
+                    break;
+                    
+                case 'resize':
+                    this.undoResize(lastAction);
+                    break;
+                    
+                case 'move':
+                    this.undoMove(lastAction);
+                    break;
+                    
+                case 'style':
+                    this.undoStyle(lastAction);
+                    break;
+                    
+                default:
+                    this.showNotification('Tipo de ação não suportado', 'warning');
+                    return;
+            }
+            
+            this.showNotification(` Ação desfeita: ${lastAction.type}`, 'success');
+            
+        } catch (error) {
+            this.showNotification('Erro ao desfazer ação', 'error');
+        }
+    }
+    
+    undoDelete(action) {
+        // Restaurar elemento deletado
+        const { parentNode, nextSibling, elementClone } = action.data;
+        
+        if (parentNode && elementClone) {
+            // Verificar se o parent ainda existe no DOM
+            if (document.body.contains(parentNode)) {
+                if (nextSibling && parentNode.contains(nextSibling)) {
+                    parentNode.insertBefore(elementClone, nextSibling);
+                } else {
+                    parentNode.appendChild(elementClone);
+                }
+                
+                // Aplicar efeito visual de restauração
+                elementClone.style.transition = 'all 0.3s ease';
+                elementClone.style.opacity = '0';
+                elementClone.style.transform = 'scale(0.8)';
+                
+                requestAnimationFrame(() => {
+                    elementClone.style.opacity = '1';
+                    elementClone.style.transform = 'scale(1)';
+                });
+            } else {
+                this.showNotification('Não é possível restaurar: elemento pai não existe', 'error');
+            }
+        } else {
+            // Dados insuficientes
+        }
+    }
+    
+    undoDuplicate(action) {
+        // Remover elemento duplicado
+        const duplicatedElement = action.data.duplicatedElement;
+        if (duplicatedElement && duplicatedElement.parentNode) {
+            // Verificar se o elemento ainda existe no DOM
+            if (document.body.contains(duplicatedElement)) {
+                // Efeito visual antes de remover
+                duplicatedElement.style.transition = 'all 0.3s ease';
+                duplicatedElement.style.opacity = '0';
+                duplicatedElement.style.transform = 'scale(0.8)';
+                
+                setTimeout(() => {
+                    if (duplicatedElement.parentNode) {
+                        duplicatedElement.parentNode.removeChild(duplicatedElement);
+                    }
+                }, 300);
+            } else {
+                this.showNotification('Elemento duplicado já foi removido', 'warning');
+            }
+        }
+    }
+    
+    undoResize(action) {
+        // Restaurar tamanho original
+        const element = action.element;
+        const { 
+            originalWidth, originalHeight, originalLeft, originalTop,
+            hasInlineWidth, hasInlineHeight, hasInlineLeft, hasInlineTop 
+        } = action.data;
+        
+        if (element && document.body.contains(element)) {
+            
+            // Aplicar transição suave
+            element.style.transition = 'all 0.3s ease';
+            
+            // Restaurar ou remover dimensões baseado no estado original
+            if (hasInlineWidth) {
+                element.style.width = originalWidth;
+            } else {
+                element.style.removeProperty('width');
+            }
+            
+            if (hasInlineHeight) {
+                element.style.height = originalHeight;
+            } else {
+                element.style.removeProperty('height');
+            }
+            
+            if (hasInlineLeft) {
+                element.style.left = originalLeft;
+            } else {
+                element.style.removeProperty('left');
+            }
+            
+            if (hasInlineTop) {
+                element.style.top = originalTop;
+            } else {
+                element.style.removeProperty('top');
+            }
+            
+            this.showNotification('Resize desfeito com sucesso', 'success');
+            
+            // Atualizar handles se modo resize estiver ativo
+            if (this.resizeMode && this.resizeElement === element) {
+                setTimeout(() => this.updateHandlePositions(element), 350);
+            }
+            
+            // Remover transição após animação
+            setTimeout(() => {
+                if (element.style) {
+                    element.style.removeProperty('transition');
+                }
+            }, 300);
+        } else {
+            this.showNotification('Elemento não encontrado para desfazer resize', 'warning');
+        }
+    }
+    
+    undoMove(action) {
+        // Restaurar posição original
+        const element = action.element;
+        const { originalLeft, originalTop } = action.data;
+        
+        if (element && document.body.contains(element)) {
+            // Aplicar transição suave
+            element.style.transition = 'all 0.2s ease';
+            
+            // Restaurar posição original
+            element.style.left = originalLeft || '0px';
+            element.style.top = originalTop || '0px';
+            
+            // Remover transição após animação
+            setTimeout(() => {
+                if (element.style) {
+                    element.style.transition = '';
+                }
+            }, 200);
+        } else {
+            this.showNotification('Elemento não encontrado para desfazer movimento', 'warning');
+        }
+    }
+    
+    undoStyle(action) {
+        // Restaurar estilos originais
+        const element = action.element;
+        const { originalStyles } = action.data;
+        
+        if (element && originalStyles) {
+            Object.keys(originalStyles).forEach(property => {
+                element.style[property] = originalStyles[property];
+            });
         }
     }
     
@@ -877,7 +1151,6 @@ class LeapUISelector {
         const remainingHighlights = document.querySelectorAll('.leap-ui-highlighted, .leap-ui-move-mode');
         
         if (remainingHighlights.length > 0) {
-            console.warn('⚠️ Ainda existem elementos com highlight após limpeza:', remainingHighlights.length);
             // Forçar limpeza dos restantes
             remainingHighlights.forEach(el => {
                 el.style.outline = '';
@@ -1212,6 +1485,11 @@ class LeapUISelector {
         // Inserir após o elemento original
         element.parentNode.insertBefore(clone, element.nextSibling);
         
+        // Salvar ação para Ctrl+Z
+        this.saveAction('duplicate', element, {
+            duplicatedElement: clone
+        });
+        
         this.showNotification('Elemento duplicado!', 'success');
         
         // Elemento duplicado criado com sucesso
@@ -1249,6 +1527,9 @@ class LeapUISelector {
             return;
         }
         
+        // Salvar ação para Ctrl+Z ANTES de deletar
+        this.saveAction('delete', element);
+        
         // Adicionar efeito visual de exclusão
         element.style.transition = 'all 0.3s ease';
         element.style.opacity = '0';
@@ -1273,7 +1554,6 @@ class LeapUISelector {
                 this.updateElementInfo(null);
                 
             } catch (error) {
-                console.error('Erro ao excluir elemento:', error);
                 this.showNotification('Erro ao excluir elemento', 'error');
             }
         }, 300); // Tempo da animação
@@ -1538,6 +1818,21 @@ class LeapUISelector {
         const startLeft = rect.left;
         const startTop = rect.top;
         
+        // Salvar estado original para Ctrl+Z
+        const computedStyle = window.getComputedStyle(element);
+        const originalData = {
+            originalWidth: element.style.width || '', // Manter vazio se não tinha style inline
+            originalHeight: element.style.height || '', // Manter vazio se não tinha style inline
+            originalLeft: element.style.left || '',
+            originalTop: element.style.top || '',
+            originalComputedWidth: computedStyle.width,
+            originalComputedHeight: computedStyle.height,
+            hasInlineWidth: !!element.style.width,
+            hasInlineHeight: !!element.style.height,
+            hasInlineLeft: !!element.style.left,
+            hasInlineTop: !!element.style.top
+        };
+        
         const handleMouseMove = (e) => {
             if (!this.isDragging) return;
             
@@ -1608,6 +1903,15 @@ class LeapUISelector {
         };
         
         const handleMouseUp = () => {
+            // Salvar ação de resize para Ctrl+Z
+            this.saveAction('resize', element, {
+                ...originalData,
+                newWidth: element.style.width,
+                newHeight: element.style.height,
+                newLeft: element.style.left,
+                newTop: element.style.top
+            });
+            
             this.isDragging = false;
             this.dragHandle = null;
             document.removeEventListener('mousemove', handleMouseMove);
@@ -1754,21 +2058,41 @@ class LeapUISelector {
         const currentTop = parseInt(element.style.top) || 0;
         const currentLeft = parseInt(element.style.left) || 0;
         
+        // Salvar posição original para Ctrl+Z
+        const originalData = {
+            originalLeft: currentLeft + 'px',
+            originalTop: currentTop + 'px'
+        };
+        
         // Aplicar movimento
+        let newTop = currentTop;
+        let newLeft = currentLeft;
+        
         switch (direction) {
             case 'up':
-                element.style.top = (currentTop - step) + 'px';
+                newTop = currentTop - step;
+                element.style.top = newTop + 'px';
                 break;
             case 'down':
-                element.style.top = (currentTop + step) + 'px';
+                newTop = currentTop + step;
+                element.style.top = newTop + 'px';
                 break;
             case 'left':
-                element.style.left = (currentLeft - step) + 'px';
+                newLeft = currentLeft - step;
+                element.style.left = newLeft + 'px';
                 break;
             case 'right':
-                element.style.left = (currentLeft + step) + 'px';
+                newLeft = currentLeft + step;
+                element.style.left = newLeft + 'px';
                 break;
         }
+        
+        // Salvar ação para Ctrl+Z
+        this.saveAction('move', element, {
+            ...originalData,
+            newLeft: newLeft + 'px',
+            newTop: newTop + 'px'
+        });
         
         // Mostrar notificação
         const directions = {

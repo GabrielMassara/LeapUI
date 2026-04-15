@@ -1,11 +1,11 @@
 // LeapUI - Service Worker
-console.log('LeapUI service worker iniciado');
+// LeapUI service worker iniciado
 
 // Escutar quando a extensão é instalada
 chrome.runtime.onInstalled.addListener((details) => {
     if (details.reason === 'install') {
-        console.log('LeapUI instalado com sucesso!');
-        console.log('Pressione Alt+I em qualquer página para começar a usar.');
+        // LeapUI instalado com sucesso!
+        // Pressione Alt+I em qualquer página para começar a usar.
     }
 });
 
@@ -37,18 +37,18 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             
         case 'log-element':
             // Log de elemento selecionado (para debugging)
-            console.log('Elemento selecionado:', message.element);
+            // Elemento selecionado
             break;
             
         default:
-            console.log('Mensagem não reconhecida:', message);
+            // Mensagem não reconhecida
     }
 });
 
 // Monitorar mudanças de aba para limpar estado se necessário
 chrome.tabs.onActivated.addListener((activeInfo) => {
     // Opcional: limpar estado quando mudar de aba
-    console.log('Aba ativa mudou:', activeInfo.tabId);
+    // Aba ativa mudou
 });
 
 // Função utilitária para injetar o content script em abas existentes (se necessário)
@@ -57,6 +57,6 @@ function injectContentScript(tabId) {
         target: {tabId: tabId},
         files: ['content.js']
     }).catch((error) => {
-        console.error('Erro ao injetar content script:', error);
+        // Erro ao injetar content script
     });
 }
