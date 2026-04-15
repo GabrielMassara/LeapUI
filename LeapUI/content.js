@@ -206,9 +206,12 @@ class LeapUISelector {
         this.navbar.id = 'leap-ui-navbar';
         this.navbar.style.cssText = `
             position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
-            right: 0 !important;
+            top: 20px !important;
+            left: 50% !important;
+            transform: translateX(-50%) !important;
+            width: auto !important;
+            max-width: 90vw !important;
+            min-width: auto !important;
             height: 60px !important;
             background: ${theme.bg} !important;
             color: ${theme.text} !important;
@@ -217,11 +220,14 @@ class LeapUISelector {
             z-index: 2147483647 !important;
             display: none !important;
             align-items: center !important;
-            padding: 0 20px !important;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2) !important;
-            border-bottom: 1px solid ${theme.border} !important;
-            backdrop-filter: blur(10px) !important;
+            justify-content: space-between !important;
+            padding: 0 24px !important;
+            gap: 12px !important;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.1) !important;
+            border-radius: 30px !important;
+            backdrop-filter: blur(20px) saturate(180%) !important;
             pointer-events: auto !important;
+            border: 1px solid rgba(104, 177, 62, 0.2) !important;
         `;
         
         // Prevenir propagação de eventos na navbar
@@ -265,7 +271,7 @@ class LeapUISelector {
         
         // Botão de toggle do modo movimento
         const moveToggleBtn = this.createNavButton(
-            this.moveMode ? '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M7.646.146a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 1.707V5.5a.5.5 0 0 1-1 0V1.707L6.354 2.854a.5.5 0 1 1-.708-.708zM8 10a.5.5 0 0 1 .5.5v3.793l1.146-1.147a.5.5 0 0 1 .708.708l-2 2a.5.5 0 0 1-.708 0l-2-2a.5.5 0 0 1 .708-.708L7.5 14.293V10.5A.5.5 0 0 1 8 10M.146 8.354a.5.5 0 0 1 0-.708l2-2a.5.5 0 1 1 .708.708L1.707 7.5H5.5a.5.5 0 0 1 0 1H1.707l1.147 1.146a.5.5 0 0 1-.708.708zM10 8a.5.5 0 0 1 .5-.5h3.793l-1.147-1.146a.5.5 0 0 1 .708-.708l2 2a.5.5 0 0 1 0 .708l-2 2a.5.5 0 0 1-.708-.708L14.293 8.5H10.5A.5.5 0 0 1 10 8"/></svg>✨' : '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M7.646.146a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 1.707V5.5a.5.5 0 0 1-1 0V1.707L6.354 2.854a.5.5 0 1 1-.708-.708zM8 10a.5.5 0 0 1 .5.5v3.793l1.146-1.147a.5.5 0 0 1 .708.708l-2 2a.5.5 0 0 1-.708 0l-2-2a.5.5 0 0 1 .708-.708L7.5 14.293V10.5A.5.5 0 0 1 8 10M.146 8.354a.5.5 0 0 1 0-.708l2-2a.5.5 0 1 1 .708.708L1.707 7.5H5.5a.5.5 0 0 1 0 1H1.707l1.147 1.146a.5.5 0 0 1-.708.708zM10 8a.5.5 0 0 1 .5-.5h3.793l-1.147-1.146a.5.5 0 0 1 .708-.708l2 2a.5.5 0 0 1 0 .708l-2 2a.5.5 0 0 1-.708-.708L14.293 8.5H10.5A.5.5 0 0 1 10 8"/></svg>',
+            this.moveMode ? '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M7.646.146a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 1.707V5.5a.5.5 0 0 1-1 0V1.707L6.354 2.854a.5.5 0 1 1-.708-.708zM8 10a.5.5 0 0 1 .5.5v3.793l1.146-1.147a.5.5 0 0 1 .708.708l-2 2a.5.5 0 0 1-.708 0l-2-2a.5.5 0 0 1 .708-.708L7.5 14.293V10.5A.5.5 0 0 1 8 10M.146 8.354a.5.5 0 0 1 0-.708l2-2a.5.5 0 1 1 .708.708L1.707 7.5H5.5a.5.5 0 0 1 0 1H1.707l1.147 1.146a.5.5 0 0 1-.708.708zM10 8a.5.5 0 0 1 .5-.5h3.793l-1.147-1.146a.5.5 0 0 1 .708-.708l2 2a.5.5 0 0 1 0 .708l-2 2a.5.5 0 0 1-.708-.708L14.293 8.5H10.5A.5.5 0 0 1 10 8"/></svg>' : '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M7.646.146a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 1.707V5.5a.5.5 0 0 1-1 0V1.707L6.354 2.854a.5.5 0 1 1-.708-.708zM8 10a.5.5 0 0 1 .5.5v3.793l1.146-1.147a.5.5 0 0 1 .708.708l-2 2a.5.5 0 0 1-.708 0l-2-2a.5.5 0 0 1 .708-.708L7.5 14.293V10.5A.5.5 0 0 1 8 10M.146 8.354a.5.5 0 0 1 0-.708l2-2a.5.5 0 1 1 .708.708L1.707 7.5H5.5a.5.5 0 0 1 0 1H1.707l1.147 1.146a.5.5 0 0 1-.708.708zM10 8a.5.5 0 0 1 .5-.5h3.793l-1.147-1.146a.5.5 0 0 1 .708-.708l2 2a.5.5 0 0 1 0 .708l-2 2a.5.5 0 0 1-.708-.708L14.293 8.5H10.5A.5.5 0 0 1 10 8"/></svg>',
             this.moveMode ? 'Desativar Modo Movimento (ESC)' : 'Ativar Modo Movimento',
             () => this.toggleMoveMode(), theme
         );
@@ -273,18 +279,6 @@ class LeapUISelector {
         
         leftButtons.appendChild(duplicateBtn);
         leftButtons.appendChild(moveToggleBtn);
-        
-        // Container central com info do elemento
-        const centerInfo = document.createElement('div');
-        centerInfo.id = 'navbar-element-info';
-        centerInfo.style.cssText = `
-            flex: 1 !important;
-            text-align: center !important;
-            font-weight: 500 !important;
-            color: ${theme.text} !important;
-            font-size: 13px !important;
-        `;
-        centerInfo.textContent = 'LeapUI - Passe o mouse sobre elementos';
         
         // Container de botões à direita
         const rightButtons = document.createElement('div');
@@ -308,10 +302,12 @@ class LeapUISelector {
         // Montar navbar
         this.navbar.appendChild(leftButtons);
         this.navbar.appendChild(moveButtons);
-        this.navbar.appendChild(centerInfo);
         this.navbar.appendChild(rightButtons);
         
         document.body.appendChild(this.navbar);
+        
+        // Criar indicador de elemento separado
+        this.createElementIndicator(theme);
     }
     
     createNavButton(icon, title, onClick, theme) {
@@ -374,38 +370,98 @@ class LeapUISelector {
         return button;
     }
     
+    createElementIndicator(theme) {
+        this.elementIndicator = document.createElement('div');
+        this.elementIndicator.id = 'leap-ui-element-indicator';
+        this.elementIndicator.style.cssText = `
+            position: fixed !important;
+            top: 90px !important;
+            left: 50% !important;
+            transform: translateX(-50%) !important;
+            background: ${theme.bg} !important;
+            color: ${theme.text} !important;
+            padding: 8px 16px !important;
+            border-radius: 20px !important;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+            font-size: 12px !important;
+            font-weight: 500 !important;
+            z-index: 2147483646 !important;
+            display: none !important;
+            backdrop-filter: blur(20px) saturate(180%) !important;
+            border: 1px solid rgba(104, 177, 62, 0.2) !important;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.2) !important;
+            white-space: nowrap !important;
+            pointer-events: none !important;
+            max-width: 90vw !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+        `;
+        this.elementIndicator.textContent = 'LeapUI - Passe o mouse sobre elementos';
+        document.body.appendChild(this.elementIndicator);
+    }
+    
     // Métodos de histórico removidos - extensão simplificada
     
     updateElementInfo(element) {
-        if (!this.navbar) return;
+        if (!this.elementIndicator) return;
         
-        const infoContainer = document.getElementById('navbar-element-info');
-        if (infoContainer && element) {
+        if (element) {
             const tagName = element.tagName.toLowerCase();
             const className = element.className ? `.${element.className.split(' ').join('.')}` : '';
             const id = element.id ? `#${element.id}` : '';
             
-            infoContainer.innerHTML = `
+            this.elementIndicator.innerHTML = `
                 <span style="font-weight: 600; color: #68B13E;">${tagName}</span><span style="color: #ffffff;">${id}${className}</span>
             `;
-        } else if (infoContainer) {
-            infoContainer.textContent = 'LeapUI - Passe o mouse sobre elementos';
+            
+            if (this.elementIndicator.style.display === 'none') {
+                this.elementIndicator.style.display = 'block';
+                this.elementIndicator.classList.remove('leap-ui-indicator-hide');
+                this.elementIndicator.classList.add('leap-ui-indicator-show');
+            }
+        } else {
+            this.elementIndicator.classList.remove('leap-ui-indicator-show');
+            this.elementIndicator.classList.add('leap-ui-indicator-hide');
+            
+            setTimeout(() => {
+                if (this.elementIndicator) {
+                    this.elementIndicator.textContent = 'LeapUI - Passe o mouse sobre elementos';
+                    this.elementIndicator.style.display = 'none';
+                    this.elementIndicator.classList.remove('leap-ui-indicator-hide');
+                }
+            }, 150); // Tempo da animação de saída
         }
     }
     
     showNavbar() {
         if (this.navbar) {
             this.navbar.style.display = 'flex';
-            // Ajustar o body para não ficar atrás da navbar
-            document.body.style.paddingTop = '60px';
+            this.navbar.classList.remove('leap-ui-navbar-hide');
+            this.navbar.classList.add('leap-ui-navbar-show');
+            // Navbar flutuante não precisa ajustar padding do body
+        }
+        if (this.elementIndicator) {
+            this.elementIndicator.style.display = 'none';
         }
     }
     
     hideNavbar() {
         if (this.navbar) {
-            this.navbar.style.display = 'none';
-            // Remover padding do body
-            document.body.style.paddingTop = '';
+            this.navbar.classList.remove('leap-ui-navbar-show');
+            this.navbar.classList.add('leap-ui-navbar-hide');
+            
+            // Esconder depois da animação
+            setTimeout(() => {
+                if (this.navbar) {
+                    this.navbar.style.display = 'none';
+                    this.navbar.classList.remove('leap-ui-navbar-hide');
+                }
+            }, 200); // Tempo da animação de saída
+            
+            // Navbar flutuante não precisa remover padding do body
+        }
+        if (this.elementIndicator) {
+            this.elementIndicator.style.display = 'none';
         }
     }
     
@@ -605,6 +661,11 @@ class LeapUISelector {
         this.currentElement = null;
         this.originalOutline = null;
         
+        // Esconder indicador de elemento
+        if (this.elementIndicator) {
+            this.elementIndicator.style.display = 'none';
+        }
+        
         // Limpar verificação periódica
         if (this.checkInterval) {
             clearInterval(this.checkInterval);
@@ -630,8 +691,8 @@ class LeapUISelector {
         
         const element = event.target;
         
-        // Ignorar overlay, navbar e elementos relacionados
-        if (element === this.overlay || element.closest('#leap-ui-overlay, #leap-ui-navbar, .leap-ui-notification, #leap-ui-context-menu')) {
+        // Ignorar overlay, navbar, indicador e elementos relacionados
+        if (element === this.overlay || element.closest('#leap-ui-overlay, #leap-ui-navbar, #leap-ui-element-indicator, .leap-ui-notification, #leap-ui-context-menu')) {
             return;
         }
         
@@ -659,9 +720,9 @@ class LeapUISelector {
         
         const element = event.target;
         
-        // Ignorar cliques no overlay, navbar, menu de contexto e notificações
+        // Ignorar cliques no overlay, navbar, indicador, menu de contexto e notificações
         if (element === this.overlay || 
-            element.closest('#leap-ui-overlay, #leap-ui-navbar, .leap-ui-notification, #leap-ui-context-menu')) {
+            element.closest('#leap-ui-overlay, #leap-ui-navbar, #leap-ui-element-indicator, .leap-ui-notification, #leap-ui-context-menu')) {
             return;
         }
         
@@ -688,7 +749,7 @@ class LeapUISelector {
         }
         
         // Ignorar elementos do próprio sistema
-        if (element.closest('#leap-ui-overlay, .leap-ui-notification, #leap-ui-context-menu')) {
+        if (element.closest('#leap-ui-overlay, #leap-ui-element-indicator, .leap-ui-notification, #leap-ui-context-menu')) {
             return;
         }
         
@@ -876,7 +937,7 @@ class LeapUISelector {
         
         notification.style.cssText = `
             position: fixed;
-            top: 60px;
+            top: 100px;
             right: 16px;
             background: ${bgColors[type] || bgColors.info};
             color: ${textColors[type] || textColors.info};
@@ -1224,7 +1285,7 @@ class LeapUISelector {
     updateMoveButton() {
         const moveToggleBtn = document.getElementById('move-toggle-btn');
         if (moveToggleBtn) {
-            moveToggleBtn.innerHTML = this.moveMode ? '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M7.646.146a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 1.707V5.5a.5.5 0 0 1-1 0V1.707L6.354 2.854a.5.5 0 1 1-.708-.708zM8 10a.5.5 0 0 1 .5.5v3.793l1.146-1.147a.5.5 0 0 1 .708.708l-2 2a.5.5 0 0 1-.708 0l-2-2a.5.5 0 0 1 .708-.708L7.5 14.293V10.5A.5.5 0 0 1 8 10M.146 8.354a.5.5 0 0 1 0-.708l2-2a.5.5 0 1 1 .708.708L1.707 7.5H5.5a.5.5 0 0 1 0 1H1.707l1.147 1.146a.5.5 0 0 1-.708.708zM10 8a.5.5 0 0 1 .5-.5h3.793l-1.147-1.146a.5.5 0 0 1 .708-.708l2 2a.5.5 0 0 1 0 .708l-2 2a.5.5 0 0 1-.708-.708L14.293 8.5H10.5A.5.5 0 0 1 10 8"/></svg>✨' : '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M7.646.146a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 1.707V5.5a.5.5 0 0 1-1 0V1.707L6.354 2.854a.5.5 0 1 1-.708-.708zM8 10a.5.5 0 0 1 .5.5v3.793l1.146-1.147a.5.5 0 0 1 .708.708l-2 2a.5.5 0 0 1-.708 0l-2-2a.5.5 0 0 1 .708-.708L7.5 14.293V10.5A.5.5 0 0 1 8 10M.146 8.354a.5.5 0 0 1 0-.708l2-2a.5.5 0 1 1 .708.708L1.707 7.5H5.5a.5.5 0 0 1 0 1H1.707l1.147 1.146a.5.5 0 0 1-.708.708zM10 8a.5.5 0 0 1 .5-.5h3.793l-1.147-1.146a.5.5 0 0 1 .708-.708l2 2a.5.5 0 0 1 0 .708l-2 2a.5.5 0 0 1-.708-.708L14.293 8.5H10.5A.5.5 0 0 1 10 8"/></svg>';
+            moveToggleBtn.innerHTML = this.moveMode ? '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M7.646.146a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 1.707V5.5a.5.5 0 0 1-1 0V1.707L6.354 2.854a.5.5 0 1 1-.708-.708zM8 10a.5.5 0 0 1 .5.5v3.793l1.146-1.147a.5.5 0 0 1 .708.708l-2 2a.5.5 0 0 1-.708 0l-2-2a.5.5 0 0 1 .708-.708L7.5 14.293V10.5A.5.5 0 0 1 8 10M.146 8.354a.5.5 0 0 1 0-.708l2-2a.5.5 0 1 1 .708.708L1.707 7.5H5.5a.5.5 0 0 1 0 1H1.707l1.147 1.146a.5.5 0 0 1-.708.708zM10 8a.5.5 0 0 1 .5-.5h3.793l-1.147-1.146a.5.5 0 0 1 .708-.708l2 2a.5.5 0 0 1 0 .708l-2 2a.5.5 0 0 1-.708-.708L14.293 8.5H10.5A.5.5 0 0 1 10 8"/></svg>' : '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M7.646.146a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 1.707V5.5a.5.5 0 0 1-1 0V1.707L6.354 2.854a.5.5 0 1 1-.708-.708zM8 10a.5.5 0 0 1 .5.5v3.793l1.146-1.147a.5.5 0 0 1 .708.708l-2 2a.5.5 0 0 1-.708 0l-2-2a.5.5 0 0 1 .708-.708L7.5 14.293V10.5A.5.5 0 0 1 8 10M.146 8.354a.5.5 0 0 1 0-.708l2-2a.5.5 0 1 1 .708.708L1.707 7.5H5.5a.5.5 0 0 1 0 1H1.707l1.147 1.146a.5.5 0 0 1-.708.708zM10 8a.5.5 0 0 1 .5-.5h3.793l-1.147-1.146a.5.5 0 0 1 .708-.708l2 2a.5.5 0 0 1 0 .708l-2 2a.5.5 0 0 1-.708-.708L14.293 8.5H10.5A.5.5 0 0 1 10 8"/></svg>';
             moveToggleBtn.title = this.moveMode ? 'Desativar Modo Movimento (ESC)' : 'Ativar Modo Movimento';
             
             // Atualizar estilo do botão (tema escuro fixo com transparência)
@@ -1242,8 +1303,86 @@ class LeapUISelector {
     }
     
     createGlowStyles() {
-        // Estilos já definidos no styles.css
-        // Não precisamos criar estilos duplicados aqui
+        // Criar estilos para efeito glow e animações da navbar
+        if (!document.querySelector('#leap-ui-glow-styles')) {
+            const style = document.createElement('style');
+            style.id = 'leap-ui-glow-styles';
+            style.textContent = `
+                /* Efeitos de highlight */
+                .leap-ui-highlighted {
+                    box-shadow: 0 0 0 2px #68B13E, 0 0 8px rgba(104, 177, 62, 0.6) !important;
+                    outline: none !important;
+                }
+                
+                .leap-ui-move-mode {
+                    box-shadow: 0 0 0 3px #68B13E, 0 0 15px rgba(104, 177, 62, 0.8) !important;
+                    outline: none !important;
+                }
+                
+                /* Animações da navbar */
+                @keyframes navbarSlideIn {
+                    0% {
+                        opacity: 0;
+                        transform: translateX(-50%) translateY(-20px) scale(0.95);
+                    }
+                    100% {
+                        opacity: 1;
+                        transform: translateX(-50%) translateY(0) scale(1);
+                    }
+                }
+                
+                @keyframes navbarSlideOut {
+                    0% {
+                        opacity: 1;
+                        transform: translateX(-50%) translateY(0) scale(1);
+                    }
+                    100% {
+                        opacity: 0;
+                        transform: translateX(-50%) translateY(-20px) scale(0.95);
+                    }
+                }
+                
+                .leap-ui-navbar-show {
+                    animation: navbarSlideIn 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards !important;
+                }
+                
+                .leap-ui-navbar-hide {
+                    animation: navbarSlideOut 0.2s ease-in forwards !important;
+                }
+                
+                /* Animações do indicador de elemento */
+                @keyframes indicatorSlideIn {
+                    0% {
+                        opacity: 0;
+                        transform: translateX(-50%) translateY(-10px);
+                    }
+                    100% {
+                        opacity: 1;
+                        transform: translateX(-50%) translateY(0);
+                    }
+                }
+                
+                @keyframes indicatorSlideOut {
+                    0% {
+                        opacity: 1;
+                        transform: translateX(-50%) translateY(0);
+                    }
+                    100% {
+                        opacity: 0;
+                        transform: translateX(-50%) translateY(-10px);
+                    }
+                }
+                
+                .leap-ui-indicator-show {
+                    animation: indicatorSlideIn 0.2s ease-out forwards !important;
+                }
+                
+                .leap-ui-indicator-hide {
+                    animation: indicatorSlideOut 0.15s ease-in forwards !important;
+                }
+            `;
+            document.head.appendChild(style);
+        }
     }
     
     moveElement(direction) {
