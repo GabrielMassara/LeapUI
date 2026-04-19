@@ -144,6 +144,8 @@ class LeapUISelector {
         
         const menuItems = [
             { id: 'copy-selector', text: 'Copiar Seletor', icon: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z"/></svg>' },
+            { id: 'copy-element', text: 'Copiar Elemento (Ctrl+C)', icon: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" viewBox="0 0 16 16"><path d="M4.5 0A2.5 2.5 0 0 0 2 2.5v11A2.5 2.5 0 0 0 4.5 16h7a2.5 2.5 0 0 0 2.5-2.5v-11A2.5 2.5 0 0 0 11.5 0zm0 1A1.5 1.5 0 0 1 6 2.5v11A1.5 1.5 0 0 1 4.5 15h-2A1.5 1.5 0 0 1 1 13.5v-11A1.5 1.5 0 0 1 2.5 1zm7 0A1.5 1.5 0 0 1 13 2.5v11a1.5 1.5 0 0 1-1.5 1.5h-2A1.5 1.5 0 0 1 8 13.5v-11A1.5 1.5 0 0 1 9.5 1z"/></svg>' },
+            { id: 'paste-element', text: 'Colar Elemento (Ctrl+V)', icon: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" viewBox="0 0 16 16"><path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1z"/><path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0z"/></svg>' },
             { id: 'edit-text', text: 'Editar Texto', icon: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" viewBox="0 0 16 16"><path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/><path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/></svg>' },
             { id: 'duplicate-element', text: 'Duplicar Elemento', icon: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z"/></svg>' },
             { id: 'resize-element', text: 'Redimensionar Elemento', icon: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" viewBox="0 0 16 16"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M5.354 8.354a.5.5 0 1 0-.708-.708l-2 2a.5.5 0 0 0 0 .708l2 2a.5.5 0 0 0 .708-.708L4.207 10.5H9.5a.5.5 0 0 0 0-1H4.207l1.147-1.146zm5.292-.354a.5.5 0 0 0 .708.708l2-2a.5.5 0 0 0 0-.708l-2-2a.5.5 0 0 0-.708.708L11.793 5.5H6.5a.5.5 0 0 0 0 1h5.293L10.646 7.646z"/></svg>' },
@@ -587,6 +589,22 @@ class LeapUISelector {
                 if (this.currentElement) {
                     this.duplicateElement(this.currentElement);
                 }
+            }
+            
+            // Ctrl + C para copiar elemento
+            if (event.key.toLowerCase() === 'c') {
+                event.preventDefault();
+                event.stopPropagation();
+                if (this.currentElement) {
+                    this.copyElement(this.currentElement);
+                }
+            }
+            
+            // Ctrl + V para colar elemento
+            if (event.key.toLowerCase() === 'v') {
+                event.preventDefault();
+                event.stopPropagation();
+                this.pasteElement();
             }
         }
         
@@ -1749,6 +1767,12 @@ class LeapUISelector {
             case 'copy-selector':
                 this.copyElementSelector(element);
                 break;
+            case 'copy-element':
+                this.copyElement(element);
+                break;
+            case 'paste-element':
+                this.pasteElement();
+                break;
             case 'edit-text':
                 this.editElementText(element);
                 break;
@@ -1993,6 +2017,211 @@ class LeapUISelector {
     inspectElement(element) {
         this.logElementInfo(element);
         this.showNotification('Informações do elemento logadas no console', 'info');
+    }
+    
+    // Copiar elemento para clipboard
+    async copyElement(element) {
+        if (!element) {
+            this.showNotification('Nenhum elemento selecionado para copiar', 'warning');
+            return;
+        }
+        
+        try {
+            // Serializar o elemento e suas propriedades
+            const elementData = this.serializeElement(element);
+            
+            // Criar um identificador único para os dados do LeapUI
+            const clipboardData = {
+                type: 'LeapUIElement',
+                version: '1.0',
+                timestamp: Date.now(),
+                data: elementData
+            };
+            
+            // Converter para JSON e copiar para clipboard
+            const jsonString = JSON.stringify(clipboardData);
+            await this.copyToClipboard(jsonString);
+            
+            this.showNotification(`Elemento copiado! (${element.tagName.toLowerCase()}) - Use Ctrl+V para colar em qualquer página`, 'success');
+            
+        } catch (error) {
+            console.error('Erro ao copiar elemento:', error);
+            this.showNotification('Erro ao copiar elemento', 'error');
+        }
+    }
+    
+    // Colar elemento do clipboard
+    async pasteElement() {
+        try {
+            // Ler dados do clipboard
+            const clipboardText = await navigator.clipboard.readText();
+            
+            if (!clipboardText) {
+                this.showNotification('Clipboard vazio', 'warning');
+                return;
+            }
+            
+            let clipboardData;
+            try {
+                clipboardData = JSON.parse(clipboardText);
+            } catch (error) {
+                this.showNotification('Dados do clipboard não são válidos para LeapUI', 'warning');
+                return;
+            }
+            
+            // Verificar se são dados do LeapUI
+            if (!clipboardData || clipboardData.type !== 'LeapUIElement') {
+                this.showNotification('Dados do clipboard não são de um elemento LeapUI', 'warning');
+                return;
+            }
+            
+            // Deserializar e recriar o elemento
+            const newElement = this.deserializeElement(clipboardData.data);
+            
+            if (!newElement) {
+                this.showNotification('Erro ao recriar elemento do clipboard', 'error');
+                return;
+            }
+            
+            // Encontrar um local adequado para inserir o elemento
+            let targetContainer = document.body;
+            
+            // Se há um elemento atual selecionado, tentar inserir próximo a ele
+            if (this.currentElement) {
+                const parent = this.currentElement.parentElement;
+                if (parent && parent !== document.documentElement) {
+                    targetContainer = parent;
+                }
+            }
+            
+            // Inserir o elemento
+            targetContainer.appendChild(newElement);
+            
+            // Adicionar efeitos visuais temporários para indicar o elemento colado
+            newElement.style.transition = 'all 0.5s ease';
+            newElement.style.opacity = '0.5';
+            newElement.style.transform = 'scale(1.1)';
+            newElement.style.boxShadow = '0 0 20px rgba(104, 177, 62, 0.8)';
+            
+            // Restaurar estilos após animação
+            setTimeout(() => {
+                newElement.style.opacity = '1';
+                newElement.style.transform = 'scale(1)';
+                newElement.style.boxShadow = '';
+            }, 500);
+            
+            this.showNotification(`Elemento colado com sucesso! (${newElement.tagName.toLowerCase()})`, 'success');
+            
+        } catch (error) {
+            console.error('Erro ao colar elemento:', error);
+            this.showNotification('Erro ao acessar clipboard ou colar elemento', 'error');
+        }
+    }
+    
+    // Serializar elemento para JSON
+    serializeElement(element) {
+        const computedStyle = window.getComputedStyle(element);
+        
+        // Capturar propriedades essenciais
+        const elementData = {
+            tagName: element.tagName.toLowerCase(),
+            innerHTML: element.innerHTML,
+            textContent: element.textContent,
+            attributes: {},
+            styles: {},
+            classList: Array.from(element.classList)
+        };
+        
+        // Capturar atributos (exceto id para evitar conflitos)
+        Array.from(element.attributes).forEach(attr => {
+            if (attr.name !== 'id') {
+                elementData.attributes[attr.name] = attr.value;
+            }
+        });
+        
+        // Capturar estilos computados importantes
+        const importantStyles = [
+            'position', 'top', 'left', 'right', 'bottom',
+            'width', 'height', 'min-width', 'min-height', 'max-width', 'max-height',
+            'margin', 'margin-top', 'margin-right', 'margin-bottom', 'margin-left',
+            'padding', 'padding-top', 'padding-right', 'padding-bottom', 'padding-left',
+            'border', 'border-width', 'border-style', 'border-color',
+            'background', 'background-color', 'background-image', 'background-size',
+            'color', 'font-family', 'font-size', 'font-weight', 'font-style',
+            'text-align', 'text-decoration', 'line-height',
+            'display', 'visibility', 'opacity', 'z-index',
+            'flex', 'flex-direction', 'justify-content', 'align-items',
+            'transform', 'transition', 'box-shadow', 'border-radius'
+        ];
+        
+        importantStyles.forEach(style => {
+            const value = computedStyle.getPropertyValue(style);
+            if (value && value !== 'initial' && value !== 'auto' && value !== 'none') {
+                elementData.styles[style] = value;
+            }
+        });
+        
+        // Capturar estilos inline
+        if (element.style.cssText) {
+            elementData.inlineStyles = element.style.cssText;
+        }
+        
+        return elementData;
+    }
+    
+    // Deserializar elemento do JSON
+    deserializeElement(elementData) {
+        try {
+            // Criar novo elemento
+            const newElement = document.createElement(elementData.tagName);
+            
+            // Restaurar conteúdo
+            if (elementData.innerHTML) {
+                newElement.innerHTML = elementData.innerHTML;
+            }
+            
+            // Restaurar atributos
+            Object.entries(elementData.attributes || {}).forEach(([name, value]) => {
+                try {
+                    newElement.setAttribute(name, value);
+                } catch (error) {
+                    console.warn('Erro ao definir atributo:', name, error);
+                }
+            });
+            
+            // Restaurar classes
+            if (elementData.classList && elementData.classList.length > 0) {
+                newElement.classList.add(...elementData.classList);
+            }
+            
+            // Restaurar estilos inline primeiro
+            if (elementData.inlineStyles) {
+                newElement.style.cssText = elementData.inlineStyles;
+            }
+            
+            // Depois aplicar estilos computados importantes
+            Object.entries(elementData.styles || {}).forEach(([property, value]) => {
+                try {
+                    newElement.style.setProperty(property, value);
+                } catch (error) {
+                    console.warn('Erro ao definir estilo:', property, error);
+                }
+            });
+            
+            // Remover referências a IDs para evitar conflitos
+            newElement.removeAttribute('id');
+            const childrenWithIds = newElement.querySelectorAll('[id]');
+            childrenWithIds.forEach(child => child.removeAttribute('id'));
+            
+            // Adicionar classe para identificar elementos colados
+            newElement.classList.add('leap-ui-pasted-element');
+            
+            return newElement;
+            
+        } catch (error) {
+            console.error('Erro ao deserializar elemento:', error);
+            return null;
+        }
     }
     
     // Método toggleTheme removido - tema escuro fixo
